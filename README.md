@@ -44,6 +44,8 @@ The following examples are available in the demos directory:
   selection, and centred text.
 * [Image preview](demos/preview.py) - generates image previews of two of the
   pages from the nametags demo.
+* [Addresses](demos/addresses.py) - print mailing labels (From a CSV file) on a
+  standard Avery 5160 label page.
 
 Demo fonts
 ==========
