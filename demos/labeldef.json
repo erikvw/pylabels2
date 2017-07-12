@@ -1,0 +1,30 @@
+{
+  "label": [
+    {
+      "name": "Avery 5160",
+      "top_margin": 0.5,
+      "left_margin": 0.19,
+      "row_gap": 0.0,
+      "column_gap": 0.12,
+      "label_height": 1.0,
+      "label_width": 2.63,
+      "columns": 3,
+      "rows": 10,
+      "page_size": "letter",
+      "measurement": "in"
+    },
+    {
+      "name": "Avery 5159",
+      "top_margin": 0.25,
+      "left_margin": 0.16,
+      "row_gap": 0.0,
+      "column_gap": 0.19,
+      "label_height": 1.5,
+      "label_width": 4.0,
+      "columns": 2,
+      "rows": 7,
+      "page_size": "letter",
+      "measurement": "in"
+    }
+  ]
+}

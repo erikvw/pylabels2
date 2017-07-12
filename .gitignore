@@ -2,6 +2,6 @@
 *.pyo
 *.swp
 *.pdf
-*.png
 *.jpg
 __pycache__
+.idea/
