@@ -32,7 +32,8 @@ class Sheet(object):
 
     """
 
-    def __init__(self, specification, drawing_callable, pages_to_draw=None, border=False, shade_missing=False):
+    def __init__(self, specification, drawing_callable, pages_to_draw=None, border=False, shade_missing=False,
+                 border_color=colors.black, border_width=1):
         """
         Parameters
         ----------
@@ -57,6 +58,11 @@ class Sheet(object):
             ReportLab colour is given, the labels will be shaded in that colour.
             A value of True will result in the missing labels being shaded in
             the hex colour 0xBBBBBB (a medium-light grey).
+        border_color: ReportLab colour, default colors.black
+            Color to use for the border line, if border is set to True
+        border_width: integer, default 1
+            Border line width in PDF units (1 PDF unit == 1/72 inch).  Only used
+            if border is set to True
 
         Notes
         -----
@@ -158,8 +164,8 @@ class Sheet(object):
 
         # Set the properties and store.
         border.isClipPath = 0
-        border.strokeWidth = 1
-        border.strokeColor = colors.black
+        border.strokeWidth = border_width
+        border.strokeColor = border_color
         border.fillColor = None
         self._border = border
 
