@@ -488,6 +488,7 @@ class Sheet(object):
 
         # Create a canvas.
         canvas = Canvas(filelike, pagesize=self._pagesize)
+        canvas.setViewerPreference("PrintScaling", "None")
 
         # Render each created page onto the canvas.
         for page in self._pages:
