@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=60", "setuptools-scm>=8.0"]
+
+[tool.setuptools_scm]
+version_file="_version.py"
+
+[tool.black]
+line-length = 95
+target-version = ["py312"]
+
+[tool.isort]
+profile = "black"
+py_version = "312"
+skip = [".tox", ".eggs"]
+
+[tool.coverage.run]
+parallel = false
+branch = true
+source = ["labels"]
+
+[tool.coverage.paths]
+source = ["labels"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+omit = ["requirements.txt"]
+exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
+]

@@ -1,3 +1,4 @@
+*.egg*
 *.pyc
 *.pyo
 *.swp
@@ -5,3 +6,4 @@
 *.jpg
 __pycache__
 .idea/
+_version.py
