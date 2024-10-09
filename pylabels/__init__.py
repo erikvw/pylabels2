@@ -14,5 +14,7 @@
 # You should have received a copy of the GNU General Public License along with
 # pylabels.  If not, see <http://www.gnu.org/licenses/>.
 
+from .build_label_def import build_label_def
+from .build_spec import build_spec
 from .sheet import Sheet
-from .specifications import Specification, InvalidDimension
+from .specifications import InvalidDimension, Specification

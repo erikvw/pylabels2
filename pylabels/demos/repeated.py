@@ -14,13 +14,15 @@
 # You should have received a copy of the GNU General Public License along with
 # pylabels.  If not, see <http://www.gnu.org/licenses/>.
 
-import labels
 from reportlab.graphics import shapes
+
+from pylabels import Sheet, Specification
 
 # Create an A4 portrait (210mm x 297mm) sheets with 2 columns and 8 rows of
 # labels. Each label is 90mm x 25mm with a 2mm rounded corner. The margins are
 # automatically calculated.
-specs = labels.Specification(210, 297, 2, 8, 90, 25, corner_radius=2)
+specs = Specification(210, 297, 2, 8, 90, 25, corner_radius=2)
+
 
 # Create a function to draw each label. This will be given the ReportLab drawing
 # object to draw on, the dimensions (NB. these will be in points, the unit
@@ -34,8 +36,9 @@ def draw_label(label, width, height, obj):
     # the label.
     label.add(shapes.String(2, 2, str(obj), fontName="Helvetica", fontSize=40))
 
+
 # Create the sheet.
-sheet = labels.Sheet(specs, draw_label, border=True)
+sheet = Sheet(specs, draw_label, border=True)
 
 # Mark some of the labels on the first page as already used.
 sheet.partial_page(1, ((1, 1), (2, 2), (4, 2)))
@@ -60,11 +63,11 @@ sheet.add_labels(range(15, 22), count=range(1, 100))
 
 # If there are more objects than count values, those without count values
 # are skipped (note that 'Three' does not appear in the output).
-sheet.add_labels(['One', 'Two', 'Three'], count=[3,2])
+sheet.add_labels(["One", "Two", "Three"], count=[3, 2])
 
 # Any oversize label is automatically trimmed to prevent it messing up others.
 sheet.add_label("Oversized label here")
 
 # Save the file and we are done.
-sheet.save('repeated.pdf')
+sheet.save("repeated.pdf")
 print("{0:d} label(s) output on {1:d} page(s).".format(sheet.label_count, sheet.page_count))

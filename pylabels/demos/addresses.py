@@ -14,36 +14,47 @@
 # You should have received a copy of the GNU General Public License along with
 # pylabels.  If not, see <http://www.gnu.org/licenses/>.
 
-from collections import namedtuple
 import csv
+from collections import namedtuple
 
-import labels
 from reportlab.graphics import shapes
 
+from pylabels import Sheet, Specification
 
 # Createa a labels page, matching Avery 5160, 8160, 6240, etc.
 
 PADDING = 1
-specs = labels.Specification(
-    215.9, 279.4, 3, 10, 64, 25.4, corner_radius=2,
-    left_margin=5, right_margin=5, top_margin=13,
-    left_padding=PADDING, right_padding=PADDING, top_padding=PADDING,
+specs = Specification(
+    215.9,
+    279.4,
+    3,
+    10,
+    64,
+    25.4,
+    corner_radius=2,
+    left_margin=5,
+    right_margin=5,
+    top_margin=13,
+    left_padding=PADDING,
+    right_padding=PADDING,
+    top_padding=PADDING,
     bottom_padding=PADDING,
-    row_gap=0)
+    row_gap=0,
+)
 
 Address = namedtuple(
-    'Address',
-    ['name', 'name2', 'street1', 'street2', 'city', 'state', 'zip'])
+    "Address", ["name", "name2", "street1", "street2", "city", "state", "zip"]
+)
 
 
-def draw_address(label, width, height, address):
+def draw_address(label, width, height, address) -> None:
     assert address.state, address
     assert address.zip, address
 
     # The order is flipped, because we're painting from bottom to top.
-    # The Some of the lines get .upper(), because that's what the USPS likes.
+    # The sum of the lines get .upper(), because that's what the USPS likes.
     lines = [
-        ('%s %s  %s' % (address.city, address.state, address.zip)).upper(),
+        ("%s %s  %s" % (address.city, address.state, address.zip)).upper(),
         address.street2.upper(),
         address.street1.upper(),
         address.name2,
@@ -75,15 +86,15 @@ def draw_address(label, width, height, address):
     label.add(group)
 
 
-sheet = labels.Sheet(specs, draw_address, border=False)
+sheet = Sheet(specs, draw_address, border=False)
 
-filename = 'addresses.csv'
-with open(filename, newline='') as csvfile:
+filename = "addresses.csv"
+with open(filename, newline="") as csvfile:
     reader = csv.DictReader(csvfile, Address._fields, quotechar='"')
     for row in reader:
         # Make sure we got all fields, and no extra fields.
-        assert None not in row, row['name']
-        assert 'zip' in row, row['name']
+        assert None not in row, row["name"]
+        assert "zip" in row, row["name"]
         for k, v in row.items():
             row[k] = v.strip()
 
@@ -92,5 +103,5 @@ with open(filename, newline='') as csvfile:
         sheet.add_label(address)
 
 
-sheet.save('labels.pdf')
+sheet.save("labels.pdf")
 print("{0:d} label(s) output on {1:d} page(s).".format(sheet.label_count, sheet.page_count))

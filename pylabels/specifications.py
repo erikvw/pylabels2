@@ -14,25 +14,35 @@
 # You should have received a copy of the GNU General Public License along with
 # pylabels.  If not, see <http://www.gnu.org/licenses/>.
 
-from decimal import Decimal
 import json
+from decimal import Decimal
 
 
 class InvalidDimension(ValueError):
-    """Raised when a sheet specification has inconsistent dimensions. """
+    """Raised when a sheet specification has inconsistent dimensions."""
+
     pass
 
 
-class Specification(object):
+class Specification:
     """Specification for a sheet of labels.
 
     All dimensions are given in millimetres. If any of the margins are not
     given, then any remaining space is divided equally amongst them. If all the
     width or all the height margins are given, they must exactly use up all
     non-label space on the sheet.
-
     """
-    def __init__(self, sheet_width, sheet_height, columns, rows, label_width, label_height, **kwargs):
+
+    def __init__(
+        self,
+        sheet_width: int | float | str,
+        sheet_height: int | float | str,
+        columns: int,
+        rows: int,
+        label_width: int | float | str,
+        label_height: int | float | str,
+        **kwargs,
+    ):
         """
         Required parameters
         -------------------
@@ -101,22 +111,22 @@ class Specification(object):
         self._label_height = Decimal(label_height)
 
         # Optional arguments; missing ones will be computed later.
-        self._left_margin = kwargs.pop('left_margin', None)
-        self._column_gap = kwargs.pop('column_gap', None)
-        self._right_margin = kwargs.pop('right_margin', None)
-        self._top_margin = kwargs.pop('top_margin', None)
-        self._row_gap = kwargs.pop('row_gap', None)
-        self._bottom_margin = kwargs.pop('bottom_margin', None)
+        self._left_margin = kwargs.pop("left_margin", None)
+        self._column_gap = kwargs.pop("column_gap", None)
+        self._right_margin = kwargs.pop("right_margin", None)
+        self._top_margin = kwargs.pop("top_margin", None)
+        self._row_gap = kwargs.pop("row_gap", None)
+        self._bottom_margin = kwargs.pop("bottom_margin", None)
 
         # Optional arguments with default values.
-        self._left_padding = kwargs.pop('left_padding', 0)
-        self._right_padding = kwargs.pop('right_padding', 0)
-        self._top_padding = kwargs.pop('top_padding', 0)
-        self._bottom_padding = kwargs.pop('bottom_padding', 0)
-        self._corner_radius = Decimal(kwargs.pop('corner_radius', 0))
-        self._padding_radius = Decimal(kwargs.pop('padding_radius', 0))
-        self._background_image = kwargs.pop('background_image', None)
-        self._background_filename = kwargs.pop('background_filename', None)
+        self._left_padding = kwargs.pop("left_padding", 0)
+        self._right_padding = kwargs.pop("right_padding", 0)
+        self._top_padding = kwargs.pop("top_padding", 0)
+        self._bottom_padding = kwargs.pop("bottom_padding", 0)
+        self._corner_radius = Decimal(kwargs.pop("corner_radius", 0))
+        self._padding_radius = Decimal(kwargs.pop("padding_radius", 0))
+        self._background_image = kwargs.pop("background_image", None)
+        self._background_filename = kwargs.pop("background_filename", None)
 
         # Leftover arguments.
         if kwargs:
@@ -124,15 +134,15 @@ class Specification(object):
             if len(args) == 1:
                 raise TypeError("Unknown keyword argument {}.".format(args[0]))
             else:
-                raise TypeError("Unknown keyword arguments: {}.".format(', '.join(args)))
+                raise TypeError("Unknown keyword arguments: {}.".format(", ".join(args)))
 
         # Track which attributes have been automatically set.
         self._autoset = set()
 
-        # Check all the dimensions etc are valid.
+        # Check all the dimensions etc. are valid.
         self._calculate()
 
-    def _calculate(self):
+    def _calculate(self) -> None:
         """Checks the dimensions of the sheet are valid and consistent.
 
         NB: this is called internally when needed; there should be no need for
@@ -140,15 +150,32 @@ class Specification(object):
 
         """
         # Check the dimensions are larger than zero.
-        for dimension in ('_sheet_width', '_sheet_height', '_columns', '_rows', '_label_width', '_label_height'):
+        for dimension in (
+            "_sheet_width",
+            "_sheet_height",
+            "_columns",
+            "_rows",
+            "_label_width",
+            "_label_height",
+        ):
             if getattr(self, dimension) <= 0:
-                name = dimension.replace('_', ' ').strip().capitalize()
+                name = dimension.replace("_", " ").strip().capitalize()
                 raise InvalidDimension("{0:s} must be greater than zero.".format(name))
 
         # Check margins / gaps are not smaller than zero if given.
         # At the same time, force the values to decimals.
-        for margin in ('_left_margin', '_column_gap', '_right_margin', '_top_margin', '_row_gap', '_bottom_margin',
-                       '_left_padding', '_right_padding', '_top_padding', '_bottom_padding'):
+        for margin in (
+            "_left_margin",
+            "_column_gap",
+            "_right_margin",
+            "_top_margin",
+            "_row_gap",
+            "_bottom_margin",
+            "_left_padding",
+            "_right_padding",
+            "_top_padding",
+            "_bottom_padding",
+        ):
             val = getattr(self, margin)
             if val is not None:
                 if margin in self._autoset:
@@ -156,7 +183,7 @@ class Specification(object):
                 else:
                     val = Decimal(val)
                     if val < 0:
-                        name = margin.replace('_', ' ').strip().capitalize()
+                        name = margin.replace("_", " ").strip().capitalize()
                         raise InvalidDimension("{0:s} cannot be less than zero.".format(name))
                 setattr(self, margin, val)
             else:
@@ -171,14 +198,20 @@ class Specification(object):
             raise InvalidDimension("Corner radius cannot be more than half the label height.")
 
         # If there is no padding, we don't need the padding radius.
-        if (self._left_padding + self._right_padding + self._top_padding + self._bottom_padding) == 0:
+        if (
+            self._left_padding + self._right_padding + self._top_padding + self._bottom_padding
+        ) == 0:
             if self._padding_radius != 0:
                 raise InvalidDimension("Padding radius must be zero if there is no padding.")
         else:
             if (self._left_padding + self._right_padding) >= self._label_width:
-                raise InvalidDimension("Sum of horizontal padding must be less than the label width.")
+                raise InvalidDimension(
+                    "Sum of horizontal padding must be less than the label width."
+                )
             if (self._top_padding + self._bottom_padding) >= self._label_height:
-                raise InvalidDimension("Sum of vertical padding must be less than the label height.")
+                raise InvalidDimension(
+                    "Sum of vertical padding must be less than the label height."
+                )
             if self._padding_radius < 0:
                 raise InvalidDimension("Padding radius cannot be less than zero.")
 
@@ -197,20 +230,26 @@ class Specification(object):
         if self._left_margin is not None:
             hspace -= self._left_margin
             if hspace < 0:
-                raise InvalidDimension("Left margin is too wide for the labels to fit on the sheet.")
+                raise InvalidDimension(
+                    "Left margin is too wide for the labels to fit on the sheet."
+                )
             hcount -= 1
         if self._column_gap is not None:
-            hspace -= ((self._columns - 1) * self._column_gap)
+            hspace -= (self._columns - 1) * self._column_gap
             if hspace < 0:
-                raise InvalidDimension("Column gap is too wide for the labels to fit on the sheet.")
-            hcount -= (self._columns - 1)
+                raise InvalidDimension(
+                    "Column gap is too wide for the labels to fit on the sheet."
+                )
+            hcount -= self._columns - 1
         if self._right_margin is not None:
             hspace -= self._right_margin
             if hspace < 0.01 and hspace > -0.01:
                 self._right_margin += hspace
                 hspace = 0
             if hspace < 0:
-                raise InvalidDimension("Right margin is too wide for the labels to fit on the sheet.")
+                raise InvalidDimension(
+                    "Right margin is too wide for the labels to fit on the sheet."
+                )
             hcount -= 1
 
         # Process the vertical margins / gaps.
@@ -218,43 +257,57 @@ class Specification(object):
         if self._top_margin is not None:
             vspace -= self._top_margin
             if vspace < 0:
-                raise InvalidDimension("Top margin is too tall for the labels to fit on the sheet.")
+                raise InvalidDimension(
+                    "Top margin is too tall for the labels to fit on the sheet."
+                )
             vcount -= 1
         if self._row_gap is not None:
-            vspace -= ((self._rows - 1) * self._row_gap)
+            vspace -= (self._rows - 1) * self._row_gap
             if vspace < 0:
-                raise InvalidDimension("Row gap is too tall for the labels to fit on the sheet.")
-            vcount -= (self._rows - 1)
+                raise InvalidDimension(
+                    "Row gap is too tall for the labels to fit on the sheet."
+                )
+            vcount -= self._rows - 1
         if self._bottom_margin is not None:
             vspace -= self._bottom_margin
             if vspace < 0.01 and vspace > -0.01:
                 self._bottom_margin += vspace
                 vspace = 0
             if vspace < 0:
-                raise InvalidDimension("Bottom margin is too tall for the labels to fit on the sheet.")
+                raise InvalidDimension(
+                    "Bottom margin is too tall for the labels to fit on the sheet."
+                )
             vcount -= 1
 
         # If all the margins are specified, they must use up all available space.
         if hcount == 0 and hspace != 0:
-            raise InvalidDimension("Not all width used by manually specified margins/gaps; {}mm left.".format(hspace))
+            raise InvalidDimension(
+                "Not all width used by manually specified margins/gaps; {}mm left.".format(
+                    hspace
+                )
+            )
         if vcount == 0 and vspace != 0:
-            raise InvalidDimension("Not all height used by manually specified margins/gaps; {}mm left.".format(vspace))
+            raise InvalidDimension(
+                "Not all height used by manually specified margins/gaps; {}mm left.".format(
+                    vspace
+                )
+            )
 
         # Split any extra horizontal space and allocate it.
         if hcount:
             auto_margin = hspace / hcount
-            for margin in ('_left_margin', '_column_gap', '_right_margin'):
+            for margin in ("_left_margin", "_column_gap", "_right_margin"):
                 if getattr(self, margin) is None:
                     setattr(self, margin, auto_margin)
 
         # And allocate any extra vertical space.
         if vcount:
             auto_margin = vspace / vcount
-            for margin in ('_top_margin', '_row_gap', '_bottom_margin'):
+            for margin in ("_top_margin", "_row_gap", "_bottom_margin"):
                 if getattr(self, margin) is None:
                     setattr(self, margin, auto_margin)
 
-    def bounding_boxes(self, mode='fraction', output='dict'):
+    def bounding_boxes(self, mode: str | None = None, output: str | None = None) -> dict | str:
         """Get the bounding boxes of the labels on a page.
 
         Parameters
@@ -279,11 +332,13 @@ class Specification(object):
 
         """
         boxes = {}
+        mode = mode or "fraction"
+        output = output or "dict"
 
         # Check the parameters.
-        if mode not in ('fraction', 'actual'):
+        if mode not in ("fraction", "actual"):
             raise ValueError("Unknown mode {0}.".format(mode))
-        if output not in ('dict', 'json'):
+        if output not in ("dict", "json"):
             raise ValueError("Unknown output {0}.".format(output))
 
         # Iterate over the rows.
@@ -299,34 +354,35 @@ class Specification(object):
                 right = left + self.label_width
 
                 # Output in the appropriate mode format.
-                if mode == 'fraction':
+                if mode == "fraction":
                     box = {
-                        'top': top / self.sheet_height,
-                        'bottom': bottom / self.sheet_height,
-                        'left': left / self.sheet_width,
-                        'right': right / self.sheet_width,
+                        "top": top / self.sheet_height,
+                        "bottom": bottom / self.sheet_height,
+                        "left": left / self.sheet_width,
+                        "right": right / self.sheet_width,
                     }
-                elif mode == 'actual':
-                    box = {'top': top, 'bottom': bottom, 'left': left, 'right': right}
+                elif mode == "actual":
+                    box = {"top": top, "bottom": bottom, "left": left, "right": right}
 
                 # Add to the collection.
-                if output == 'json':
-                    boxes['{0:d}x{1:d}'.format(row, column)] = box
-                    box['top'] = float(box['top'])
-                    box['bottom'] = float(box['bottom'])
-                    box['left'] = float(box['left'])
-                    box['right'] = float(box['right'])
+                if output == "json":
+                    boxes["{0:d}x{1:d}".format(row, column)] = box
+                    box["top"] = float(box["top"])
+                    box["bottom"] = float(box["bottom"])
+                    box["left"] = float(box["left"])
+                    box["right"] = float(box["right"])
                 else:
                     boxes[(row, column)] = box
 
         # Done.
-        if output == 'json':
+        if output == "json":
             return json.dumps(boxes)
         return boxes
 
     # Helper function to create an accessor for one of the properties.
     # attr is the 'internal' attribute e.g., _sheet_width.
-    def create_accessor(attr, deletable=False):
+    @staticmethod
+    def create_accessor(attr: str, deletable: bool = False):
         # Getter is simple; no processing needed.
         @property
         def accessor(self):
@@ -348,17 +404,18 @@ class Specification(object):
             setattr(self, attr, value)
             try:
                 self._calculate()
-            except:
+            except InvalidDimension as e:
                 # Reset to the original state.
                 setattr(self, attr, original)
                 if was_autoset:
                     self._autoset.add(attr)
 
                 # Let the error propogate up.
-                raise
+                raise InvalidDimension(e)
 
         # Create a deleter if allowable.
         if deletable:
+
             @accessor.deleter
             def accessor(self):
                 self._autoset.add(attr)
@@ -369,26 +426,26 @@ class Specification(object):
         return accessor
 
     # Create accessors for all our properties.
-    sheet_width = create_accessor('_sheet_width')
-    sheet_height = create_accessor('_sheet_height')
-    label_width = create_accessor('_label_width')
-    label_height = create_accessor('_label_height')
-    columns = create_accessor('_columns')
-    rows = create_accessor('_rows')
-    left_margin = create_accessor('_left_margin', deletable=True)
-    column_gap = create_accessor('_column_gap', deletable=True)
-    right_margin = create_accessor('_right_margin', deletable=True)
-    top_margin = create_accessor('_top_margin', deletable=True)
-    row_gap = create_accessor('_row_gap', deletable=True)
-    bottom_margin = create_accessor('_bottom_margin', deletable=True)
-    corner_radius = create_accessor('_corner_radius')
-    padding_radius = create_accessor('_padding_radius')
-    background_image = create_accessor('_background_image', deletable=True)
-    background_filename = create_accessor('_background_filename', deletable=True)
-    left_padding = create_accessor('_left_padding', deletable=True)
-    right_padding = create_accessor('_right_padding', deletable=True)
-    top_padding = create_accessor('_top_padding', deletable=True)
-    bottom_padding = create_accessor('_bottom_padding', deletable=True)
+    sheet_width = create_accessor("_sheet_width")
+    sheet_height = create_accessor("_sheet_height")
+    label_width = create_accessor("_label_width")
+    label_height = create_accessor("_label_height")
+    columns = create_accessor("_columns")
+    rows = create_accessor("_rows")
+    left_margin = create_accessor("_left_margin", deletable=True)
+    column_gap = create_accessor("_column_gap", deletable=True)
+    right_margin = create_accessor("_right_margin", deletable=True)
+    top_margin = create_accessor("_top_margin", deletable=True)
+    row_gap = create_accessor("_row_gap", deletable=True)
+    bottom_margin = create_accessor("_bottom_margin", deletable=True)
+    corner_radius = create_accessor("_corner_radius")
+    padding_radius = create_accessor("_padding_radius")
+    background_image = create_accessor("_background_image", deletable=True)
+    background_filename = create_accessor("_background_filename", deletable=True)
+    left_padding = create_accessor("_left_padding", deletable=True)
+    right_padding = create_accessor("_right_padding", deletable=True)
+    top_padding = create_accessor("_top_padding", deletable=True)
+    bottom_padding = create_accessor("_bottom_padding", deletable=True)
 
-    # Don't need the helper function any more.
+    # Don't need the helper function anymore.
     del create_accessor

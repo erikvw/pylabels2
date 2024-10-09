@@ -13,35 +13,36 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # pylabels.  If not, see <http://www.gnu.org/licenses/>.
+from __future__ import annotations
 
-import os.path
+from pathlib import Path
 
 from reportlab.graphics import shapes
 from reportlab.lib import colors
 from reportlab.pdfbase.pdfmetrics import stringWidth
 
-import labels
-from demos.labeldef import build_label_def, build_spec
+from pylabels import Sheet
+from pylabels.demos.labeldef import build_label_def, build_spec
 
-# Everything in pylabels in in mm, but for row heights we need points
+# Everything in pylabels is in mm, but for row heights we need points
 MM2P = 2.83465
 
 # Get the path to the demos directory.
-base_path = os.path.dirname(__file__)
+base_path = Path(__file__).parent
 
 # get the label definations
-label_defs = build_label_def(os.path.join(base_path, 'labeldef.json'))
+label_defs = build_label_def(base_path / "labeldef.json")
 
 # get our spec
-spec = build_spec('Avery 5160', label_defs)
+spec = build_spec("Avery 5160", label_defs)
 
 
 # Create a function to draw each label. This will be given the ReportLab drawing
 # object to draw on, the dimensions (NB. these will be in points, the unit
 # ReportLab uses) of the label, and the name to put on the tag.
-def write_address(label, width, height, address):
+def write_address(label, width, height, address) -> None:
     # first split the address into lines, this is for calculating the length of the longest line
-    address_lines = address.split('\n')
+    address_lines = address.split("\n")
     # get the info
     number_lines, line_length = string_size(address)
     # find the longest string line
@@ -54,7 +55,7 @@ def write_address(label, width, height, address):
     longest_width = stringWidth(longest_line, "Times-Roman", font_size)
     total_height = number_lines * line_height
     while (longest_width > text_width) or (total_height > text_height):
-        font_size *= .9
+        font_size *= 0.9
         longest_width = stringWidth(longest_line, "Times-Roman", font_size)
         line_height = (font_size / MM2P) * 1.5
         total_height = number_lines * line_height
@@ -70,11 +71,11 @@ def write_address(label, width, height, address):
         _l = number_lines // 2
         for i in range(_l):
             if i == 0:
-                vertical_lines.append((i + 1) * (line_height * .90))
-                vertical_lines.append((i + 1) * (-line_height * .90))
+                vertical_lines.append((i + 1) * (line_height * 0.90))
+                vertical_lines.append((i + 1) * (-line_height * 0.90))
             else:
-                vertical_lines.append(((i + 1) * (line_height)) + (line_height * .65))
-                vertical_lines.append(((i + 1) * (-line_height)) - (line_height * .65))
+                vertical_lines.append(((i + 1) * (line_height)) + (line_height * 0.65))
+                vertical_lines.append(((i + 1) * (-line_height)) - (line_height * 0.65))
     else:
         # odd is a little tricker as the first line gets placed at 0
         # but then we need to move from 1/2 the line height up and down
@@ -99,26 +100,26 @@ def write_address(label, width, height, address):
         label.add(s)
 
 
-def string_size(address_string):
+def string_size(address_string) -> tuple:
     """
     calculate the number of lines and the length of each line
     in that string
     :param address_string: the string representing thr address
     :return: a tuple with the first number the number of lines and the second a list of line lengths
     """
-    num_lines = len(address_string.split('\n'))
-    line_length = [len(line) for line in address_string.split('\n')]
-    return (num_lines, line_length)
+    num_lines = len(address_string.split("\n"))
+    line_length = [len(line) for line in address_string.split("\n")]
+    return num_lines, line_length
 
 
 # create the sheet
-sheet = labels.Sheet(spec, write_address, border=False)
+sheet = Sheet(spec, write_address, border=False)
 
-# lets just write the same address a bunch of times
-label_count = (spec.columns * spec.rows)
-address = 'Test Name\nTest Address\nTest Address 2\nTest City, Test State, Test Zip'
+# let's just write the same address a bunch of times
+label_count = spec.columns * spec.rows
+address = "Test Name\nTest Address\nTest Address 2\nTest City, Test State, Test Zip"
 for i in range(label_count):
     sheet.add_label(address)
 
-sheet.save('test.pdf')
+sheet.save("test.pdf")
 print("{0:d} label(s) output on {1:d} page(s).".format(sheet.label_count, sheet.page_count))

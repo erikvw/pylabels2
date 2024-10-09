@@ -1,8 +1,8 @@
 import warnings
 from unittest import TestCase
 
-from labels import predefined
-from labels.specifications import Specification
+from pylabels import predefined
+from pylabels.specifications import Specification
 
 
 class TestPredefinedSpecs(TestCase):

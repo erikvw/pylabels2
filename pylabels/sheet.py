@@ -13,31 +13,46 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # pylabels.  If not, see <http://www.gnu.org/licenses/>.
+from __future__ import annotations
 
-from reportlab.pdfgen.canvas import Canvas
-from reportlab.graphics import shapes
+from copy import copy, deepcopy
+from decimal import Decimal
+from itertools import repeat
+from typing import TYPE_CHECKING
+
+from reportlab.graphics import renderPDF, renderPM, shapes
+from reportlab.graphics.shapes import ArcPath, Drawing, Image
 from reportlab.lib import colors
 from reportlab.lib.units import mm
-from reportlab.graphics import renderPDF
-from reportlab.graphics import renderPM
-from reportlab.graphics.shapes import Drawing, ArcPath, Image
-from copy import copy, deepcopy
-from itertools import repeat
+from reportlab.pdfgen.canvas import Canvas
 
-from decimal import Decimal
+if TYPE_CHECKING:
+    from typing import Callable
+
+    from reportlab.lib.colors import HexColor
+
+    from pylabels import Specification
+
 mm = Decimal(mm)
 
-class Sheet(object):
-    """Create one or more sheets of labels.
 
-    """
+class Sheet:
+    """Create one or more sheets of labels."""
 
-    def __init__(self, specification, drawing_callable, pages_to_draw=None, border=False, shade_missing=False,
-                 border_color=colors.black, border_width=1):
+    def __init__(
+        self,
+        specification: Specification,
+        drawing_callable: Callable,
+        pages_to_draw: list[int] | None = None,
+        border: bool | None = None,
+        shade_missing: bool | HexColor | None = None,
+        border_color: HexColor | None = None,
+        border_width: int | None = None,
+    ):
         """
         Parameters
         ----------
-        specification: labels.Specification instance
+        specification: pylabels.Specification instance
             The sizes etc of the label sheets.
         drawing_callable: callable
             A function (or other callable object) to call to draw an individual
@@ -76,32 +91,42 @@ class Sheet(object):
         and the actual output.
 
         """
-        # Save our arguments.
-        specification._calculate()
-        self.specs = deepcopy(specification)
+        self._used = {}
+        self._pages = []
+        self._current_page = None
+
+        self.border = border
+        self.border_color = border_color or colors.black
+        self.border_width = 1 if border_width is None else border_width
         self.drawing_callable = drawing_callable
         self.pages_to_draw = pages_to_draw
-        self.border = border
-        if shade_missing == True:
+        if shade_missing is True:
             self.shade_missing = colors.HexColor(0xBBBBBB)
         else:
             self.shade_missing = shade_missing
+
+        specification._calculate()
+        self.specs = deepcopy(specification)
 
         # Set up some internal variables.
         self._lw = self.specs.label_width * mm
         self._lh = self.specs.label_height * mm
         self._cr = self.specs.corner_radius * mm
-        self._dw = (self.specs.label_width - self.specs.left_padding - self.specs.right_padding) * mm
-        self._dh = (self.specs.label_height - self.specs.top_padding - self.specs.bottom_padding) * mm
+        self._dw = (
+            self.specs.label_width - self.specs.left_padding - self.specs.right_padding
+        ) * mm
+        self._dh = (
+            self.specs.label_height - self.specs.top_padding - self.specs.bottom_padding
+        ) * mm
         self._lp = self.specs.left_padding * mm
         self._bp = self.specs.bottom_padding * mm
         self._pr = self.specs.padding_radius * mm
-        self._used = {}
-        self._pages = []
-        self._current_page = None
 
         # Page information.
-        self._pagesize = (float(self.specs.sheet_width*mm), float(self.specs.sheet_height*mm))
+        self._pagesize = (
+            float(self.specs.sheet_width * mm),
+            float(self.specs.sheet_height * mm),
+        )
         self._numlabels = [self.specs.rows, self.specs.columns]
         self._position = [1, 0]
         self.label_count = 0
@@ -119,13 +144,18 @@ class Sheet(object):
                 self._bgimage.height = self._pagesize[1]
             elif isinstance(self._bgimage, Drawing):
                 self._bgimage.shift(0, 0)
-                self._bgimage.scale(self._pagesize[0]/self._bgimage.width, self._pagesize[1]/self._bgimage.height)
+                self._bgimage.scale(
+                    self._pagesize[0] / self._bgimage.width,
+                    self._pagesize[1] / self._bgimage.height,
+                )
             else:
                 raise ValueError("Unhandled background type.")
 
         # Background from a filename.
         elif self.specs.background_filename:
-            self._bgimage = Image(0, 0, self._pagesize[0], self._pagesize[1], self.specs.background_filename)
+            self._bgimage = Image(
+                0, 0, self._pagesize[0], self._pagesize[1], self.specs.background_filename
+            )
 
         # No background.
         else:
@@ -164,8 +194,8 @@ class Sheet(object):
 
         # Set the properties and store.
         border.isClipPath = 0
-        border.strokeWidth = border_width
-        border.strokeColor = border_color
+        border.strokeWidth = self.border_width
+        border.strokeColor = self.border_color
         border.fillColor = None
         self._border = border
 
@@ -227,7 +257,9 @@ class Sheet(object):
         """
         # Check the page number is valid.
         if page <= self.page_count:
-            raise ValueError("Page {0:d} has already started, cannot mark used labels now.".format(page))
+            raise ValueError(
+                "Page {0:d} has already started, cannot mark used labels now.".format(page)
+            )
 
         # Add these to any existing labels marked as used.
         used = self._used.get(page, set())
@@ -245,9 +277,7 @@ class Sheet(object):
         self._used[page] = used
 
     def _new_page(self):
-        """Helper function to start a new page. Not intended for external use.
-
-        """
+        """Helper function to start a new page. Not intended for external use."""
         self._current_page = Drawing(*self._pagesize)
         if self._bgimage:
             self._current_page.add(self._bgimage)
@@ -309,32 +339,27 @@ class Sheet(object):
         # Increment the count now we have found a suitable position.
         self.label_count += 1
 
-    def _calculate_edges(self):
-        """Calculate edges of the current label. Not intended for external use.
-
-
-        """
+    def _calculate_edges(self) -> tuple[float, float]:
+        """Calculate edges of the current label. Not intended for external use."""
         # Calculate the left edge of the label.
         left = self.specs.left_margin
-        left += (self.specs.label_width * (self._position[1] - 1))
+        left += self.specs.label_width * (self._position[1] - 1)
         if self.specs.column_gap:
-            left += (self.specs.column_gap * (self._position[1] - 1))
+            left += self.specs.column_gap * (self._position[1] - 1)
         left *= mm
 
         # And the bottom.
         bottom = self.specs.sheet_height - self.specs.top_margin
-        bottom -= (self.specs.label_height * self._position[0])
+        bottom -= self.specs.label_height * self._position[0]
         if self.specs.row_gap:
-            bottom -= (self.specs.row_gap * (self._position[0] - 1))
+            bottom -= self.specs.row_gap * (self._position[0] - 1)
         bottom *= mm
 
         # Done.
         return float(left), float(bottom)
 
     def _shade_missing_label(self):
-        """Helper method to shade a missing label. Not intended for external use.
-
-        """
+        """Helper method to shade a missing label. Not intended for external use."""
         # Start a drawing for the whole label.
         label = Drawing(float(self._lw), float(self._lh))
         label.add(self._clip_label)
@@ -368,9 +393,7 @@ class Sheet(object):
             self._shade_missing_label()
 
     def _draw_label(self, obj, count):
-        """Helper method to draw on the current label. Not intended for external use.
-
-        """
+        """Helper method to draw on the current label. Not intended for external use."""
         # Start a drawing for the whole label.
         label = Drawing(float(self._lw), float(self._lh))
         label.add(self._clip_label)
@@ -459,7 +482,7 @@ class Sheet(object):
 
         # If it is not an iterable (e.g., a list or range object),
         # create an iterator over it.
-        if not hasattr(count, 'next') and not hasattr(count, '__next__'):
+        if not hasattr(count, "next") and not hasattr(count, "__next__"):
             count = iter(count)
 
         # Go through the objects.
@@ -498,7 +521,7 @@ class Sheet(object):
         # Done.
         canvas.save()
 
-    def preview(self, page, filelike, format='png', dpi=72, background_colour=0xFFFFFF):
+    def preview(self, page, filelike, format="png", dpi=72, background_colour=0xFFFFFF):
         """Render a preview image of a page.
 
         Parameters
@@ -537,7 +560,9 @@ class Sheet(object):
         """
         # Check the page number.
         if page < 1 or page > self.page_count:
-            raise ValueError("Invalid page number; should be between 1 and {0:d}.".format(self.page_count))
+            raise ValueError(
+                "Invalid page number; should be between 1 and {0:d}.".format(self.page_count)
+            )
 
         # Shade any remaining missing labels if desired.
         self._shade_remaining_missing()
@@ -552,14 +577,14 @@ class Sheet(object):
             self._bgimage.height = int(oldh) + 1
 
         # Let ReportLab do the heavy lifting.
-        renderPM.drawToFile(self._pages[page-1], filelike, format, dpi, background_colour)
+        renderPM.drawToFile(self._pages[page - 1], filelike, format, dpi, background_colour)
 
         # Restore the size of the background image if we changed it.
         if oldw:
             self._bgimage.width = oldw
             self._bgimage.height = oldh
 
-    def preview_string(self, page, format='png', dpi=72, background_colour=0xFFFFFF):
+    def preview_string(self, page, format="png", dpi=72, background_colour=0xFFFFFF):
         """Render a preview image of a page as a string.
 
         Parameters
@@ -591,7 +616,9 @@ class Sheet(object):
         """
         # Check the page number.
         if page < 1 or page > self.page_count:
-            raise ValueError("Invalid page number; should be between 1 and {0:d}.".format(self.page_count))
+            raise ValueError(
+                "Invalid page number; should be between 1 and {0:d}.".format(self.page_count)
+            )
 
         # Shade any remaining missing labels if desired.
         self._shade_remaining_missing()
@@ -606,7 +633,7 @@ class Sheet(object):
             self._bgimage.height = int(oldh) + 1
 
         # Let ReportLab do the heavy lifting.
-        s = renderPM.drawToString(self._pages[page-1], format, dpi, background_colour)
+        s = renderPM.drawToString(self._pages[page - 1], format, dpi, background_colour)
 
         # Restore the size of the background image if we changed it.
         if oldw:

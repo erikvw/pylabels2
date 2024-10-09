@@ -1,6 +1,6 @@
 # This file is part of pylabels, a Python library to create PDFs for printing
 # labels.
-# Copyright (C) 2014 Blair Bonnett
+# Copyright (C) 2015 Blair Bonnett
 #
 # pylabels is free software: you can redistribute it and/or modify it under the
 # terms of the GNU General Public License as published by the Free Software
@@ -14,16 +14,18 @@
 # You should have received a copy of the GNU General Public License along with
 # pylabels.  If not, see <http://www.gnu.org/licenses/>.
 
-import labels
+import random
+
 from reportlab.graphics import shapes
 from reportlab.graphics.widgets.grids import Grid
 from reportlab.lib import colors
-import random
+
+from pylabels import Sheet, Specification
 
 # Colours used as backgrounds.
 colours = [
     colors.HexColor(0x04F1B1),
-    colors.HexColor('#ADADAF'),
+    colors.HexColor("#ADADAF"),
     colors.Color(0.5, 0.1, 0.7),
     colors.Color(0.5, 0.1, 0.1, alpha=0.5),
     colors.CMYKColor(0.1, 0.1, 0.6, 0.3),
@@ -32,7 +34,21 @@ colours = [
 # Create an A4 portrait (210mm x 297mm) sheet with 2 columns and 8 rows of
 # labels. Each label is 90mm x 25mm with a 2mm rounded corner. The margins are
 # automatically calculated.
-specs = labels.Specification(210, 297, 2, 8, 90, 25, corner_radius=2)
+specs = Specification(
+    210,
+    297,
+    2,
+    8,
+    90,
+    25,
+    corner_radius=2,
+    left_padding=5,
+    top_padding=5,
+    bottom_padding=5,
+    right_padding=10,
+    padding_radius=4,
+)
+
 
 # Create a function to draw each label. This will be given the ReportLab drawing
 # object to draw on, the dimensions (NB. these will be in points, the unit
@@ -42,48 +58,49 @@ def draw_label(label, width, height, obj):
     colour = random.choice(colours)
 
     # And a style.
-    style = random.choice(('solid', 'stripes', 'hatch'))
+    style = random.choice(("solid", "stripes", "hatch"))
 
     # Draw a solid background.
-    if style == 'solid':
+    if style == "solid":
         r = shapes.Rect(0, 0, width, height)
         r.fillColor = colour
         r.strokeColor = None
         label.add(r)
 
     # Both stripes and hatches need vertical stripes.
-    if style in ('stripes', 'hatch'):
+    if style in ("stripes", "hatch"):
         g = Grid()
         g.width = width
         g.height = height
-        g.delta = width/14.0                        # The width of the stripes.
-        g.delta0 = random.random() * (width/14.0)   # Offset of the start of the stripe.
+        g.delta = width / 14.0  # The width of the stripes.
+        g.delta0 = random.random() * (width / 14.0)  # Offset of the start of the stripe.
         g.fillColor = None
         g.strokeColor = None
-        g.orientation = 'vertical'
+        g.orientation = "vertical"
         g.stripeColors = (colors.HexColor(0xFFFFFF), colour)
         label.add(g)
 
     # Draw the horizontal stripes of any hatching.
     # Note the empty parts need to be 'coloured' transparent to avoid
     # hiding the vertical stripes.
-    if style == 'hatch':
+    if style == "hatch":
         g2 = Grid()
         g2.width = width
         g2.height = height
-        g2.delta = height/4.0
-        g2.delta0 = random.random() * (height/4.0)
+        g2.delta = height / 4.0
+        g2.delta0 = random.random() * (height / 4.0)
         g2.fillColor = None
         g2.strokeColor = None
-        g2.orientation = 'horizontal'
+        g2.orientation = "horizontal"
         g2.stripeColors = (colors.transparent, colour)
         label.add(g2)
 
     # Print the label value as a string.
     label.add(shapes.String(2, 2, str(obj), fontName="Helvetica", fontSize=40))
 
+
 # Create the sheet.
-sheet = labels.Sheet(specs, draw_label, border=True)
+sheet = Sheet(specs, draw_label, border=True)
 
 # Mark some of the labels on the first page as already used.
 sheet.partial_page(1, ((1, 1), (2, 2), (4, 2)))
@@ -104,5 +121,5 @@ sheet.add_labels(range(3, 22))
 sheet.add_label("Oversized label here")
 
 # Save the file and we are done.
-sheet.save('background_colours.pdf')
+sheet.save("padding.pdf")
 print("{0:d} label(s) output on {1:d} page(s).".format(sheet.label_count, sheet.page_count))
