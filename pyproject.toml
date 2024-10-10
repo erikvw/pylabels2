@@ -1,5 +1,5 @@
 [project]
-name = "pylabels"
+name = "pylabels2"
 dynamic = ["version"]
 description = "Library to generate PDFs for printing labels"
 readme = "README.md"
