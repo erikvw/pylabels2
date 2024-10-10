@@ -49,6 +49,6 @@ Navigate to:
 
     http://localhost:8000
 
-The default user is "barcode" with password "barcode"    
+The default user is "admin" with password "admin"    
 
 
