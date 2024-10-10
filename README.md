@@ -11,11 +11,8 @@ This fork includes 7 pull requests from the original repo as it seems to be aban
 - Created two main features.
 - Add demo: Print addresses from a CSV file
 
-**Latest release:** 1.3.0
-
 pylabels is a Python library for creating PDFs to print sheets of labels. It
-uses the [ReportLab PDF toolkit][1] to produce the PDF, and works under both
-Python 2 and Python 3.
+uses the [ReportLab PDF toolkit][1] to produce the PDF.
 
 Basically, the user creates a set of specifications of the label sizes etc,
 writes a callback function which does the actual drawing, and gives these two
