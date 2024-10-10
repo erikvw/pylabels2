@@ -33,9 +33,9 @@ and install
 
     pip install .
 
-Now navigate into the ``pylabels/django_demo/project`` folder
+Now navigate into the ``pylabels/demos/django_demo/project`` folder
 
-    cd django_demo/project
+    cd demos/django_demo/project
 
 migrate the database:
     
