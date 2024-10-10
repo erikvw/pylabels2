@@ -53,7 +53,7 @@ The following examples are available in the demos directory:
 * [Addresses](demos/addresses.py) - print mailing labels (From a CSV file) on a
   standard Avery 5160 label page.
 * [Django demo](demos/django_demo/project) - Download a PDF of labels with barcodes
-  directly from the browser in a [https://www.djangoproject.com](Django) project
+  directly from the browser in a [Django]([Django](https://www.djangoproject.com)) project
   (uses ``save_to_buffer`` instead of ``save``).
   
 
