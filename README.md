@@ -1,17 +1,7 @@
 pylabels
 ========
 
-This fork includes 7 pull requests from the original repo as it seems to be abandoned:
-
-- Add a QR code label generation example
-- set PDF preference to print without scaling
-- Fix dependencies in setup.py.
-- Add a framework for including predefined specifications.
-- Add options for specifying border width and color.
-- Created two main features.
-- Add demo: Print addresses from a CSV file
-
-pylabels is a Python library for creating PDFs to print sheets of labels. It
+``pylabels`` is a Python library for creating PDFs to print sheets of labels. It
 uses the [ReportLab PDF toolkit][1] to produce the PDF.
 
 Basically, the user creates a set of specifications of the label sizes etc,
