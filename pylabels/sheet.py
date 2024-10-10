@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
     from reportlab.lib.colors import HexColor
 
-    from pylabels import Specification
+    from .specifications import Specification
 
 mm = Decimal(mm)
 
@@ -54,7 +54,7 @@ class Sheet:
         Parameters
         ----------
         specification: pylabels.Specification instance
-            The sizes etc of the label sheets.
+            The sizes etc. of the label sheets.
         drawing_callable: callable
             A function (or other callable object) to call to draw an individual
             label. It will be given four parameters specifying the label. In
@@ -517,8 +517,8 @@ class Sheet:
         Parameters
         ----------
         filelike: path or file-like object
-            The filename or file-like object to save the labels under. Any
-            existing contents will be overwritten.
+            The filename or file-like object to save the labels under.
+            Any existing contents will be overwritten.
 
         """
         canvas = self._save(filelike)

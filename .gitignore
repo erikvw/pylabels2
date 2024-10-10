@@ -9,3 +9,4 @@ build/*
 __pycache__
 .idea/
 _version.py
+db.sqlite3
