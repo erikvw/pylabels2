@@ -1,9 +1,56 @@
-pylabels
-========
+pylabels2
+=========
 
-``pylabels`` is a Python library for creating PDFs to print sheets of labels. It
+``pylabels2`` is a Python library for creating PDFs to print sheets of labels. It
 uses the [ReportLab PDF toolkit][1] to produce the PDF.
 
+This is a fork of [davis-junior/pylabels](https://github.com/davis-junior/pylabels)
+
+The original project was written by Blair Bonnett found at [bcbnz/pylabels](https://github.com/bcbnz/pylabels)
+
+Installation
+============
+
+    pip install pylabels2
+
+Usage
+=====
+
+Note: In this fork, the module has been renamed from ``labels`` to ``pylabels``.
+
+Install
+
+    from pylabels import Specification, Sheet
+
+Create a callable that adds content to a label:
+    
+    def draw_label(label, width, height, label_data):
+        """Callable to generate one label"""
+        label.add(shapes.String(2, 2, str(label_data), fontName="Helvetica", fontSize=40))
+
+Create a specification for the label sheet:
+
+    specs = Specification(210, 297, 2, 8, 90, 25, corner_radius=2)
+    
+Create a label sheet and pass it the ``spec`` and ``callable``:
+    
+    sheet = Sheet(specs, draw_label, border=True)
+
+Add labels to the sheet:
+
+    sheet.add_label("Hello World")
+    # etc ...
+
+Save the sheet to a file as PDF:
+    
+    sheet.save("basic.pdf")
+
+Or save to BytesIO buffer:
+    
+    buffer = sheet.save_to_buffer()
+
+Overview
+========
 Basically, the user creates a set of specifications of the label sizes etc,
 writes a callback function which does the actual drawing, and gives these two
 items to a Sheet object. Items are then added to the sheet using the
@@ -25,25 +72,25 @@ Examples
 
 The following examples are available in the demos directory:
 
-* [Basic](demos/basic.py) - a introduction to the basic use of pylabels.
-* [Partial pages](demos/partial_page.py) - how to produce partial pages (i.e.,
+* [Basic](pylabels/demos/basic.py) - a introduction to the basic use of pylabels.
+* [Partial pages](pylabels/demos/partial_page.py) - how to produce partial pages (i.e.,
   pages with some of the labels previously used).
-* [Repeated](demos/repeated.py) - how to use the count parameter to add
+* [Repeated](pylabels/demos/repeated.py) - how to use the count parameter to add
   multiple copies of the same label.
-* [Background colours](demos/background_colours.py) - examples of solid,
+* [Background colours](pylabels/demos/background_colours.py) - examples of solid,
   striped and hatched backgrounds of different colours on each label.
-* [Page background](demos/page_background.py) - how to add a background
+* [Page background](pylabels/demos/page_background.py) - how to add a background
   image for each page.
-* [Padding](demos/padding.py) - how to add padding to the labels.
-* [Nametags](demos/nametags.py) - creates a set of nametags from the list of
+* [Padding](pylabels/demos/padding.py) - how to add padding to the labels.
+* [Nametags](pylabels/demos/nametags.py) - creates a set of nametags from the list of
   names in the names.txt file. Includes the use of two custom fonts, font size
   selection, and centred text.
-* [Image preview](demos/preview.py) - generates image previews of two of the
+* [Image preview](pylabels/demos/preview.py) - generates image previews of two of the
   pages from the nametags demo.
-* [Addresses](demos/addresses.py) - print mailing labels (From a CSV file) on a
+* [Addresses](pylabels/demos/addresses.py) - print mailing labels (From a CSV file) on a
   standard Avery 5160 label page.
-* [Django demo](demos/django_demo/project) - Download a PDF of labels with barcodes
-  directly from the browser in a [Django]([Django](https://www.djangoproject.com)) project
+* [Django demo](pylabels/demos/django_demo/project) - Download a PDF of labels with barcodes
+  directly from the browser in a [Django](https://www.djangoproject.com) project
   (uses ``save_to_buffer`` instead of ``save``).
   
 
