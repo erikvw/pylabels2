@@ -16,10 +16,10 @@ skip = [".tox", ".eggs"]
 [tool.coverage.run]
 parallel = false
 branch = true
-source = ["labels"]
+source = ["pylabels"]
 
 [tool.coverage.paths]
-source = ["labels"]
+source = ["pylabels"]
 
 [tool.coverage.report]
 show_missing = true

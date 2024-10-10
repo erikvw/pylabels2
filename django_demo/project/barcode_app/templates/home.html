@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Title</title>
+<link rel="stylesheet" type="text/css" href="{% static 'css/barcode.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/navbar.css' %}">
+</head>
+<body>
+    {%  include "navbar.html" %}
+    <h1>Download one or more sheets of barcodes as a single PDF file</h1>
+    <form name="BarcodeForm" action=" print_barcode/" style="border:1px solid #ccc" onsubmit="return isInt()">
+        <div class="container">
+            <div class="row">
+                <div class="col-25"><label for="label_specification">Name of specification</label></div></div>
+            <div class="row">
+                <div class="col-75"><input type="text" placeholder="default" name="label_specification" value="default" required></div>
+            </div>
+            <div class="row">
+                <div class="col-25"><label for="max_labels">Number of labels to print</label></div></div>
+            <div class="row">
+                <div class="col-75"><input type="text" placeholder="number of labels" name="max_labels" value="12" required></div>
+            </div>
+            <div class="row"><p></p></div>
+            <div class="row">
+              <button type="submit" class="downloadbtn">Download as PDF</button>
+            </div>
+      </div>
+    </form>
+</body>
+</html>
+
+<script>
+    function isInt() {
+        if (! /^-?[0-9]+$/.test(document.forms["BarcodeForm"]["max_labels"].value)) {
+            alert("Must be a number");
+            return false;
+        }
+    }
+</script>
