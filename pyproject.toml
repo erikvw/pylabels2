@@ -1,11 +1,33 @@
+[project]
+name = "pylabels"
+dynamic = ["version"]
+description = "Library to generate PDFs for printing labels"
+readme = "README.md"
+dependencies = ['reportlab']
+requires-python = '>=3.12'
+keywords = ['labels avery']
+authors = [{name="Blair Bonnett"}]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+]
+license = {file = "LICENSE"}
+
+
+
+[tool.setuptools.packages.find]
+where = ["pylabels"]
+include = ["pylabels*"]
+exclude = ["pylabels.demo*"]
+namespaces = false  # true by default
+
 [build-system]
 requires = ["setuptools>=60", "setuptools-scm>=8.0"]
 
 [tool.setuptools_scm]
 version_file="_version.py"
-
-[tool.setuptools]
-packages = ["pylabels"]
 
 [tool.black]
 line-length = 95
