@@ -18,36 +18,38 @@ Usage
 
 Note: In this fork, the module has been renamed from ``labels`` to ``pylabels``.
 
-Install
+Install:
 
     from pylabels import Specification, Sheet
 
-Create a callable that adds content to a label:
+Create a ``callable`` that adds content to a single label:
     
     def draw_label(label, width, height, label_data):
-        """Callable to generate one label"""
         label.add(shapes.String(2, 2, str(label_data), fontName="Helvetica", fontSize=40))
 
-Create a specification for the label sheet:
+Create a ``Specification`` for the layout of the labels on a sheet:
 
     specs = Specification(210, 297, 2, 8, 90, 25, corner_radius=2)
     
-Create a label sheet and pass it the ``spec`` and ``callable``:
+Create a ``Sheet`` and pass it the ``spec`` and ``callable``:
     
     sheet = Sheet(specs, draw_label, border=True)
 
-Add labels to the sheet:
+Add labels to the ``sheet``:
 
-    sheet.add_label("Hello World")
+    sheet.add_label("Hello World1")
+    sheet.add_label("Hello World2")
     # etc ...
 
-Save the sheet to a file as PDF:
+Save the ``sheet`` to file as PDF:
     
     sheet.save("basic.pdf")
 
 Or save to BytesIO buffer:
     
     buffer = sheet.save_to_buffer()
+
+See detailed examples below.
 
 Overview
 ========
@@ -62,8 +64,8 @@ draw on the label. Any of the standard ReportLab drawing methods can be used,
 with pylabels automatically adding a clipping path around each label to prevent
 it interfering with other labels.
 
-Once all the items have been added, the labels can be saved as a PDF, or a
-preview of a page can be saved as an image.
+Once all the items have been added, the labels can be saved as a PDF, a
+preview of a page can be saved as an image, or returned as a BytesIO buffer.
 
 [1]: http://www.reportlab.com/opensource/
 
