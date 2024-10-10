@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from copy import copy, deepcopy
 from decimal import Decimal
+from io import BytesIO
 from itertools import repeat
 from typing import TYPE_CHECKING
 
@@ -496,16 +497,7 @@ class Sheet:
             # Draw it.
             self._draw_label(obj, thiscount)
 
-    def save(self, filelike):
-        """Save the file as a PDF.
-
-        Parameters
-        ----------
-        filelike: path or file-like object
-            The filename or file-like object to save the labels under. Any
-            existing contents will be overwritten.
-
-        """
+    def _save(self, filelike):
         # Shade any remaining missing labels if desired.
         self._shade_remaining_missing()
 
@@ -517,9 +509,28 @@ class Sheet:
         for page in self._pages:
             renderPDF.draw(page, canvas, 0, 0)
             canvas.showPage()
+        return canvas
 
+    def save(self, filelike):
+        """Save the file as a PDF.
+
+        Parameters
+        ----------
+        filelike: path or file-like object
+            The filename or file-like object to save the labels under. Any
+            existing contents will be overwritten.
+
+        """
+        canvas = self._save(filelike)
         # Done.
         canvas.save()
+
+    def save_to_buffer(self) -> BytesIO:
+        buffer = BytesIO()
+        canvas = self._save(buffer)
+        canvas.save()
+        buffer.seek(0)
+        return buffer
 
     def preview(self, page, filelike, format="png", dpi=72, background_colour=0xFFFFFF):
         """Render a preview image of a page.
