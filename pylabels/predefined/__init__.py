@@ -5,7 +5,7 @@ from importlib import import_module
 from inspect import isclass
 from warnings import warn
 
-from pylabels.specifications import Specification
+from ..specifications import Specification
 
 LETTER_PORTRAIT_WIDTH = 215.9
 LETTER_PORTRAIT_HEIGHT = 279.4

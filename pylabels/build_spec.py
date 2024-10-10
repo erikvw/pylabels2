@@ -2,9 +2,10 @@ from .constants import I2MM, SHEET_SIZES
 from .specifications import Specification
 
 
-def build_spec(label_name: str, spec_dictionary: dict) -> Specification:
-    """
-    Buld a specification from the dictionary we parsed in build_label_def
+def build_spec(label_name: str, spec_dictionary: dict[str, dict]) -> Specification:
+    """Buld a specification from the dictionary we parsed in
+    `build_label_def`.
+
     :param label_name: the label name
     :param spec_dictionary: the dictionary of labels
     :return: a specification
@@ -24,7 +25,7 @@ def build_spec(label_name: str, spec_dictionary: dict) -> Specification:
     label_height = data.pop("label_height") * mult
     # now that we have popped all the required stuff out of the dictionary
     # we can just use defaults for the rest of the stuff
-    # here is a list of things that dont get multiplied by the mulitplier
+    # here is a list of things that don't get multiplied by the mulitplier
     non_mult = ["corner_radius", "padding_radius", "background_image", "background_filename"]
     # holder for the transformed optional stuff
     opt_data = {}

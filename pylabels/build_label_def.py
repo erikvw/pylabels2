@@ -1,19 +1,15 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from pathlib import Path
+from pathlib import Path
 
 
-def build_label_def(json_file_path: Path | str) -> dict:
-    """The basic purpose of this method is to load the JSON file
-    specs and turn it into a dictionary of dictionaries where the
-    label name is the key.
+def build_label_def(json_file_path: Path | str) -> dict[str, dict] | None:
+    """Converts a JSON file of specifications per label into a
+    dictionary of specifications per label.
 
-    The dictionary that is the value should then contain all the
-    necessary parameters to build a specification.
+    Each dictionary contains parameters to build a Specification
+    instance.
 
     :param json_file_path:
     :return: a dictionary of label specs
