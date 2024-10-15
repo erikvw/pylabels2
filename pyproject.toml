@@ -16,7 +16,7 @@ classifiers = [
 license = {file = "LICENSE"}
 
 [tool.setuptools.packages.find]
-where = ["pylabels"]
+# where = ["pylabels"]
 include = ["pylabels*"]
 exclude = ["pylabels.demo*"]
 namespaces = false  # true by default
