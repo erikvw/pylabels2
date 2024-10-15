@@ -9,7 +9,9 @@ class Command(BaseCommand):
         call_command("makemigrations")
         call_command("migrate")
         User.objects.filter(email="admin@example.com").delete()
-        User.objects.create_superuser("admin", email="admin@example.com", password="admin")
+        User.objects.create_superuser(
+            "admin", email="admin@example.com", password="admin"  # nosec B106
+        )
         try:
             LabelSpecification.objects.get(name="default")
         except ObjectDoesNotExist:

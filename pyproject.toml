@@ -40,6 +40,23 @@ parallel = false
 branch = true
 source = ["pylabels"]
 
+[tool.flake8]
+ignore = ['E226','W503','E203','W605']
+per-file-ignores = [
+    '__init__.py:F401',
+]
+max-line-length = 95
+max-complexity = 10
+count = true
+exclude = [
+    '.tox',
+    '.git',
+    '__pycache__',
+    'build',
+    'dist',
+    '.eggs'
+]
+
 [tool.coverage.paths]
 source = ["pylabels"]
 

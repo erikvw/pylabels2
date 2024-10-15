@@ -42,10 +42,10 @@ specs = Specification(210, 297, 2, 8, 90, 25, corner_radius=2)
 # ReportLab uses) of the label, and the object to render.
 def draw_label(label, width, height, obj):
     # Pick a background colour.
-    colour = random.choice(colours)
+    colour = random.choice(colours)  # nosec B311
 
     # And a style.
-    style = random.choice(("solid", "stripes", "hatch"))
+    style = random.choice(("solid", "stripes", "hatch"))  # nosec B311
 
     # Draw a solid background.
     if style == "solid":
@@ -60,7 +60,10 @@ def draw_label(label, width, height, obj):
         g.width = width
         g.height = height
         g.delta = width / 14.0  # The width of the stripes.
-        g.delta0 = random.random() * (width / 14.0)  # Offset of the start of the stripe.
+
+        # Offset of the start of the stripe.
+        g.delta0 = random.random() * (width / 14.0)  # nosec B311
+
         g.fillColor = None
         g.strokeColor = None
         g.orientation = "vertical"
@@ -75,7 +78,7 @@ def draw_label(label, width, height, obj):
         g2.width = width
         g2.height = height
         g2.delta = height / 4.0
-        g2.delta0 = random.random() * (height / 4.0)
+        g2.delta0 = random.random() * (height / 4.0)  # nosec B311
         g2.fillColor = None
         g2.strokeColor = None
         g2.orientation = "horizontal"

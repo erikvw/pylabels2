@@ -43,13 +43,15 @@ def get_label_data(max_labels: int | None = None) -> QuerySet[LabelData]:
     LabelData.objects.all().delete()
     Subject.objects.all().delete()
     for i in tqdm(range(1234567, 1234567 + max_labels), total=max_labels):
-        clinic_code = random.choice(list(clinics.keys()))
+        clinic_code = random.choice(list(clinics.keys()))  # nosec B311
         obj = Subject.objects.create(
             subject_identifier=f"{clinic_code}-{i}",
             clinic=clinics[clinic_code],
-            gender=random.choice(["M", "F"]),
+            gender=random.choice(["M", "F"]),  # nosec B311
         )
-        reference = "".join(random.choices(string.ascii_letters.upper() + "23456789", k=6))
+        reference = "".join(
+            random.choices(string.ascii_letters.upper() + "23456789", k=6)  # nosec B311
+        )
         LabelData.objects.create(subject=obj, reference=reference, relative_seq=i)
     return LabelData.objects.all()
 
