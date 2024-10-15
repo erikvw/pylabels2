@@ -8,7 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import QuerySet
 from reportlab.graphics.barcode.widgets import BarcodeStandard39
 from reportlab.graphics.charts.textlabels import Label as RlLabel
-from reportlab.graphics.shapes import String
+from reportlab.graphics.shapes import Drawing, String
 from reportlab.pdfgen import canvas
 from tqdm import tqdm
 
@@ -36,16 +36,17 @@ def get_label_specification(name: str | None) -> LabelSpecification:
 
 
 def get_label_data(max_labels: int | None = None) -> QuerySet[LabelData]:
-    """Generate label data"""
+    """Generate study medication label data."""
     max_labels = max_labels or 0
     max_labels = max_labels if 0 <= max_labels <= 48 else 12
-    clinics = ["Mochudi", "Gaborone", "Kanye", "Lobatse"]
+    clinics = {"40": "Mochudi", "10": "Gaborone", "20": "Kanye", "30": "Lobatse"}
     LabelData.objects.all().delete()
     Subject.objects.all().delete()
-    for i in tqdm(range(1234, 1234 + max_labels), total=max_labels):
+    for i in tqdm(range(1234567, 1234567 + max_labels), total=max_labels):
+        clinic_code = random.choice(list(clinics.keys()))
         obj = Subject.objects.create(
-            subject_identifier=f"PATIENT{i}",
-            clinic=random.choice(clinics),
+            subject_identifier=f"{clinic_code}-{i}",
+            clinic=clinics[clinic_code],
             gender=random.choice(["M", "F"]),
         )
         reference = "".join(random.choices(string.ascii_letters.upper() + "23456789", k=6))
@@ -53,8 +54,15 @@ def get_label_data(max_labels: int | None = None) -> QuerySet[LabelData]:
     return LabelData.objects.all()
 
 
-def draw_label(label, width, height, obj: LabelData):
-    """Callable to draw a single label given a model instance `obj`"""
+def draw_label(
+    label: Drawing,
+    width: int | float,
+    height: int | float,
+    obj: LabelData,
+) -> Drawing:
+    """Callable to draw a single study medication label given a model
+    instance `obj`
+    """
     br = BarcodeStandard39(
         humanReadable=True, checksum=False, barHeight=30, barWidth=0.7, gap=1.7
     )
@@ -65,7 +73,7 @@ def draw_label(label, width, height, obj: LabelData):
     label.add(String(15, height - 20, f"DJANGO Study - {obj.subject.clinic}", fontSize=10))
     label.add(
         String(
-            width - 120,
+            width - 110,
             height - 40,
             f"{obj.subject.subject_identifier}{obj.subject.gender}",
             fontSize=12,
@@ -81,7 +89,7 @@ def draw_label(label, width, height, obj: LabelData):
     return label
 
 
-def blank_buffer():
+def blank_buffer() -> io.BytesIO:
     buffer = io.BytesIO()
     p = canvas.Canvas(buffer)
     p.showPage()
@@ -92,16 +100,12 @@ def blank_buffer():
 
 def print_sheets(
     labels: list[LabelData],
-    filename: str | None = None,
     label_specification: str | None = None,
-) -> BytesIO | None:
-    """Generate a PDF of 6 x 2 sheets of labels"""
-    label_spec = get_label_specification(name=label_specification)
+) -> BytesIO:
     if len(labels) == 0:
         return blank_buffer()
-    specs = Specification(**label_spec.kwattrs)
-    sheet = Sheet(specs, draw_label, border=label_spec.border)
+    obj = get_label_specification(name=label_specification)
+    specs = Specification(**obj.as_dict)
+    sheet = Sheet(specs, draw_label, border=obj.border)
     sheet.add_labels(labels)
-    if not filename:
-        return sheet.save_to_buffer()
-    sheet.save(filename)
+    return sheet.save_to_buffer()

@@ -36,10 +36,10 @@ class LabelSpecification(models.Model):
     border = models.BooleanField(default=True, blank=False)
     row_gap = models.FloatField(default=None, null=True, blank=True)
     column_gap = models.FloatField(default=None, null=True, blank=True)
-    top_margin = models.FloatField(default=21.0)
+    top_margin = models.FloatField(default=22.0)
     left_margin = models.FloatField(default=8.0)
     right_margin = models.FloatField(default=8.0)
-    bottom_margin = models.FloatField(default=22.0)
+    bottom_margin = models.FloatField(default=20.0)
     left_padding = models.FloatField(default=2.0)
     right_padding = models.FloatField(default=2.0)
     top_padding = models.FloatField(default=2.0)
@@ -56,7 +56,7 @@ class LabelSpecification(models.Model):
         return self.name
 
     @property
-    def kwattrs(self) -> dict:
+    def as_dict(self) -> dict[str, float | int | None]:
         attrs = [
             "sheet_width",
             "sheet_height",
