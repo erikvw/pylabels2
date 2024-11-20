@@ -27,10 +27,10 @@ class InvalidDimension(ValueError):
 class Specification:
     """Specification for a sheet of labels.
 
-    All dimensions are given in millimetres. If any of the margins are not
-    given, then any remaining space is divided equally amongst them. If all the
-    width or all the height margins are given, they must exactly use up all
-    non-label space on the sheet.
+    All dimensions are given in millimetres. If any of the margins
+    are not given, then any remaining space is divided equally
+    amongst them. If all the width or all the height margins are
+    given, they must exactly use up all non-label space on the sheet.
     """
 
     def __init__(
@@ -72,9 +72,9 @@ class Specification:
 
         Padding
         -------
-        left_padding, right_padding, top_padding, bottom_padding: positive dimensions, default 0
-            The padding between the edges of the label and the area available
-            to draw on.
+        left_padding, right_padding, top_padding, bottom_padding: positive
+            dimensions, default 0 The padding between the edges of the
+            label and the area available to draw on.
 
         Corners
         ---------------------
@@ -142,7 +142,7 @@ class Specification:
         # Check all the dimensions etc. are valid.
         self._calculate()
 
-    def _calculate(self) -> None:
+    def _calculate(self) -> None:  # noqa
         """Checks the dimensions of the sheet are valid and consistent.
 
         NB: this is called internally when needed; there should be no need for

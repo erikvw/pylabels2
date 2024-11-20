@@ -11,7 +11,7 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
 
 class PrintBarcodeView(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs) -> FileResponse:
         label_data = get_label_data(
             max_labels=int(request.GET.get("max_labels")),
         )

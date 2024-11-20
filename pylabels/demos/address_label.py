@@ -41,7 +41,8 @@ spec = build_spec("Avery 5160", label_defs)
 # object to draw on, the dimensions (NB. these will be in points, the unit
 # ReportLab uses) of the label, and the name to put on the tag.
 def write_address(label, width, height, address) -> None:
-    # first split the address into lines, this is for calculating the length of the longest line
+    # first split the address into lines, this is for calculating the
+    # length of the longest line
     address_lines = address.split("\n")
     # get the info
     number_lines, line_length = string_size(address)
@@ -105,7 +106,8 @@ def string_size(address_string) -> tuple:
     calculate the number of lines and the length of each line
     in that string
     :param address_string: the string representing thr address
-    :return: a tuple with the first number the number of lines and the second a list of line lengths
+    :return: a tuple with the first number the number of lines and
+             the second a list of line lengths
     """
     num_lines = len(address_string.split("\n"))
     line_length = [len(line) for line in address_string.split("\n")]

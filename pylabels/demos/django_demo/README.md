@@ -21,7 +21,7 @@ Navigate to a working folder
 
     cd  ~/working
 
-Clone this repo into your working folder 
+Clone this repo into your working folder
 
     git clone https://github.com/erikvw/pylabels
 
@@ -38,9 +38,9 @@ Now navigate into the ``pylabels/demos/django_demo/project`` folder
     cd demos/django_demo/project
 
 migrate the database:
-    
+
     $ python manage.py prepare
- 
+
 Start the test server:
 
     $ python manage.py runserver
@@ -49,6 +49,4 @@ Navigate to:
 
     http://localhost:8000
 
-The default user is "admin" with password "admin"    
-
-
+The default user is "admin" with password "admin"

@@ -61,7 +61,9 @@ def write_name(label, width, height, name):
     s = shapes.String(width / 2.0, 15, name, textAnchor="middle")
     s.fontName = "KatamotzIkasi"
     s.fontSize = font_size
-    s.fillColor = random.choice((colors.black, colors.blue, colors.red, colors.green))
+    s.fillColor = random.choice(
+        (colors.black, colors.blue, colors.red, colors.green)  # nosec B311
+    )
     label.add(s)
 
 

@@ -1,0 +1,4 @@
+[run]
+include = pylabels/*
+omit = pylabels/tests/*
+branch = 1

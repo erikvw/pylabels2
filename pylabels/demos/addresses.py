@@ -48,8 +48,8 @@ Address = namedtuple(
 
 
 def draw_address(label, width, height, address) -> None:
-    assert address.state, address
-    assert address.zip, address
+    assert address.state, address  # nosec B101
+    assert address.zip, address  # nosec B101
 
     # The order is flipped, because we're painting from bottom to top.
     # The sum of the lines get .upper(), because that's what the USPS likes.
@@ -75,8 +75,8 @@ def draw_address(label, width, height, address) -> None:
     _, _, gx, gy = group.getBounds()
 
     # Make sure the label fits in a sticker
-    assert gx <= lx, (address, gx, lx)
-    assert gy <= ly, (address, gy, ly)
+    assert gx <= lx, (address, gx, lx)  # nosec B101
+    assert gy <= ly, (address, gy, ly)  # nosec B101
 
     # Move the content to the center of the sticker
     dx = (lx - gx) / 2
@@ -93,8 +93,8 @@ with open(filename, newline="") as csvfile:
     reader = csv.DictReader(csvfile, Address._fields, quotechar='"')
     for row in reader:
         # Make sure we got all fields, and no extra fields.
-        assert None not in row, row["name"]
-        assert "zip" in row, row["name"]
+        assert None not in row, row["name"]  # nosec B101
+        assert "zip" in row, row["name"]  # nosec B101
         for k, v in row.items():
             row[k] = v.strip()
 

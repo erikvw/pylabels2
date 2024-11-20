@@ -23,16 +23,16 @@ Install:
     from pylabels import Specification, Sheet
 
 Create a ``callable`` that adds content to a single label:
-    
+
     def draw_label(label, width, height, label_data):
         label.add(shapes.String(2, 2, str(label_data), fontName="Helvetica", fontSize=40))
 
 Create a ``Specification`` for the layout of the labels on a sheet:
 
     specs = Specification(210, 297, 2, 8, 90, 25, corner_radius=2)
-    
+
 Create a ``Sheet`` and pass it the ``spec`` and ``callable``:
-    
+
     sheet = Sheet(specs, draw_label, border=True)
 
 Add labels to the ``sheet``:
@@ -42,11 +42,11 @@ Add labels to the ``sheet``:
     # etc ...
 
 Save the ``sheet`` to file as PDF:
-    
+
     sheet.save("basic.pdf")
 
 Or save to BytesIO buffer:
-    
+
     buffer = sheet.save_to_buffer()
 
 See detailed examples below.
@@ -94,7 +94,7 @@ The following examples are available in the demos directory:
 * [Django demo](pylabels/demos/django_demo/project) - Download a PDF of labels with barcodes
   directly from the browser in a [Django](https://www.djangoproject.com) project
   (uses ``save_to_buffer`` instead of ``save``).
-  
+
 
 Demo fonts
 ==========
