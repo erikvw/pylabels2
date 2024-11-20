@@ -8,6 +8,8 @@ This is a fork of [davis-junior/pylabels](https://github.com/davis-junior/pylabe
 
 The original project was written by Blair Bonnett found at [bcbnz/pylabels](https://github.com/bcbnz/pylabels)
 
+See also [erikvw/django-pylabels](https://github.com/erikvw/django-pylabels) for integration into Django.
+
 Installation
 ============
 
