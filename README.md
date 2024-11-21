@@ -1,3 +1,5 @@
+![pypi](https://img.shields.io/pypi/v/pylabels2.svg) ![PyPI Downloads](https://static.pepy.tech/badge/pylabels2)
+
 pylabels2
 =========
 
@@ -55,7 +57,7 @@ See detailed examples below.
 
 Overview
 ========
-Basically, the user creates a set of specifications of the label sizes etc,
+Basically, the user creates a set of specifications of the label sizes etc.,
 writes a callback function which does the actual drawing, and gives these two
 items to a Sheet object. Items are then added to the sheet using the
 add_label() method (or add_labels() to add all items from an iterable).
@@ -76,7 +78,7 @@ Examples
 
 The following examples are available in the demos directory:
 
-* [Basic](pylabels/demos/basic.py) - a introduction to the basic use of pylabels.
+* [Basic](pylabels/demos/basic.py) - an introduction to the basic use of pylabels.
 * [Partial pages](pylabels/demos/partial_page.py) - how to produce partial pages (i.e.,
   pages with some of the labels previously used).
 * [Repeated](pylabels/demos/repeated.py) - how to use the count parameter to add
