@@ -73,6 +73,21 @@ preview of a page can be saved as an image, or returned as a BytesIO buffer.
 
 [1]: http://www.reportlab.com/opensource/
 
+Watermarks during testing
+=========================
+You can add a watermark to each label by passing watermark parameters to the ``save`` or ``save_buffer`` methods:
+
+```python
+watermark = ("Sample", ("Helvetica", 12))
+sheet.save_buffer(watermark)
+```
+or 
+
+```python
+watermark = ("Sample", ("Helvetica", 12))
+sheet.save(file_obj, watermark)
+```
+
 Examples
 ========
 
