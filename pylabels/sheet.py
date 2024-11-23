@@ -497,7 +497,7 @@ class Sheet:
             # Draw it.
             self._draw_label(obj, thiscount)
 
-    def _save(self, filelike):
+    def _save(self, filelike, watermark: tuple[str, tuple[str, int]] | None = None):
         # Shade any remaining missing labels if desired.
         self._shade_remaining_missing()
 
@@ -508,10 +508,12 @@ class Sheet:
         # Render each created page onto the canvas.
         for page in self._pages:
             renderPDF.draw(page, canvas, 0, 0)
+            if watermark:
+                self.draw_watermark(canvas, watermark=watermark)
             canvas.showPage()
         return canvas
 
-    def save(self, filelike):
+    def save(self, filelike, watermark: tuple[str, tuple[str, int]] | None = None):
         """Save the file as a PDF.
 
         Parameters
@@ -519,18 +521,32 @@ class Sheet:
         filelike: path or file-like object
             The filename or file-like object to save the labels under.
             Any existing contents will be overwritten.
+        watermark: tuple like ("Sample", ("Helvetica", 12))
+            If set prints an opaque gray watermark at a 45-degree
+            rotation on each label. Useful for testing.
 
         """
-        canvas = self._save(filelike)
+        canvas = self._save(filelike, watermark=watermark)
         # Done.
         canvas.save()
 
-    def save_to_buffer(self) -> BytesIO:
+    def save_to_buffer(self, watermark: tuple[str, tuple[str, int]] | None = None) -> BytesIO:
         buffer = BytesIO()
-        canvas = self._save(buffer)
+        canvas = self._save(buffer, watermark=watermark)
         canvas.save()
         buffer.seek(0)
         return buffer
+
+    @staticmethod
+    def draw_watermark(canvas, watermark: tuple[str, tuple[str, int]] | None = None):
+        if watermark:
+            canvas.saveState()
+            canvas.setFont(*watermark[1])
+            canvas.setFillGray(0.5, 0.5)  # Light gray color
+            canvas.translate(300, 500)
+            canvas.rotate(45)
+            canvas.drawCentredString(0, 0, watermark[0])
+            canvas.restoreState()
 
     def preview(self, page, filelike, format="png", dpi=72, background_colour=0xFFFFFF):
         """Render a preview image of a page.
